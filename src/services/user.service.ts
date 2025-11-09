@@ -1,6 +1,18 @@
-import { User } from "../models/user.model";
-import { users } from "../models/users.model";
+import { create } from 'domain';
+import { User } from '../models/user.model';
+import { users } from '../models/users.model.js';
+import { v4 as uuidv4 } from 'uuid';
 
 export const getAllUsers = (): User[] => {
   return users;
+};
+
+export const createUser = (
+  username: string,
+  age: number,
+  hobbies: string[]
+): User => {
+  const newUser: User = { id: uuidv4(), username, age, hobbies };
+  users.push(newUser);
+  return newUser;
 };
