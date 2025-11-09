@@ -2,6 +2,7 @@ import http from 'node:http';
 import dotenv from 'dotenv';
 import {
   createUser,
+  deleteUser,
   getAllUsers,
   getUserById,
   updateUser,
@@ -19,7 +20,6 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(users));
   } else if (url?.startsWith('/api/users/') && method === 'GET') {
-
     const id = url.split('/')[3];
     const user = getUserById(id);
 
@@ -52,7 +52,6 @@ const server = http.createServer((req, res) => {
       }
     });
   } else if (url?.startsWith('/api/users/') && method === 'PUT') {
-    
     const id = url.split('/')[3];
     let body = '';
 
@@ -74,6 +73,18 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify({ message: 'Invalid JSON' }));
       }
     });
+  } else if (url?.startsWith('/api/users/') && method === 'DELETE') {
+    
+    const id = url.split('/')[3];
+    const ok = deleteUser(id);
+
+    if (ok) {
+      res.writeHead(204);
+      res.end();
+    } else {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ message: 'User not found' }));
+    }
   } else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Not found');

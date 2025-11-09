@@ -28,3 +28,11 @@ export const updateUser = (id: string, data: Partial<User>): User | undefined =>
   users[index] = { ...users[index], ...data };
   return users[index];
 };
+
+export const deleteUser = (id: string): boolean => {
+  const index = users.findIndex((u) => u.id === id);
+  if (index === -1) return false;
+
+  users.splice(index, 1);
+  return true;
+};
