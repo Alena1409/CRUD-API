@@ -20,3 +20,11 @@ export const createUser = (
 export const getUserById = (id: string): User | undefined => {
   return users.find(user => user.id === id)
 }
+
+export const updateUser = (id: string, data: Partial<User>): User | undefined => {
+  const index = users.findIndex((u) => u.id === id);
+  if (index === -1) return undefined;
+
+  users[index] = { ...users[index], ...data };
+  return users[index];
+};

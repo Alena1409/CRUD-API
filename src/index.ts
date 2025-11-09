@@ -1,6 +1,11 @@
 import http from 'node:http';
 import dotenv from 'dotenv';
-import { createUser, getAllUsers, getUserById } from './services/user.service.js';
+import {
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+} from './services/user.service.js';
 
 dotenv.config();
 
@@ -13,7 +18,6 @@ const server = http.createServer((req, res) => {
     const users = getAllUsers();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(users));
-
   } else if (url?.startsWith('/api/users/') && method === 'GET') {
 
     const id = url.split('/')[3];
@@ -26,7 +30,6 @@ const server = http.createServer((req, res) => {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ message: 'User not found' }));
     }
-
   } else if (req.url === '/api/users' && req.method === 'POST') {
     let body = '';
 
@@ -46,6 +49,29 @@ const server = http.createServer((req, res) => {
       } catch (error) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ message: 'Invalid request body' }));
+      }
+    });
+  } else if (url?.startsWith('/api/users/') && method === 'PUT') {
+    
+    const id = url.split('/')[3];
+    let body = '';
+
+    req.on('data', (chunk) => (body += chunk));
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        const updated = updateUser(id, data);
+
+        if (updated) {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(updated));
+        } else {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ message: 'User not found' }));
+        }
+      } catch {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'Invalid JSON' }));
       }
     });
   } else {
