@@ -1,18 +1,33 @@
 import http from 'node:http';
 import dotenv from 'dotenv';
-import { createUser, getAllUsers } from './services/user.service.js';
+import { createUser, getAllUsers, getUserById } from './services/user.service.js';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 4000;
 
 const server = http.createServer((req, res) => {
+  const { url, method } = req;
+
   if (req.url === '/api/users' && req.method === 'GET') {
     const users = getAllUsers();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(users));
+
+  } else if (url?.startsWith('/api/users/') && method === 'GET') {
+
+    const id = url.split('/')[3];
+    const user = getUserById(id);
+
+    if (user) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(user));
+    } else {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ message: 'User not found' }));
+    }
+
   } else if (req.url === '/api/users' && req.method === 'POST') {
-    
     let body = '';
 
     req.on('data', (chunk) => {
